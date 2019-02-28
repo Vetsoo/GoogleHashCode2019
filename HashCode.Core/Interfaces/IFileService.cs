@@ -4,7 +4,7 @@ namespace HashCode.Core.Interfaces
 {
     public interface IFileService
     {
-        FileContents ReadFile(string fileName);
+        Collection ReadFile(string fileName);
         void WriteFile(string inputFile, Result result);
     }
 }

@@ -10,10 +10,10 @@ namespace HashCode.Infra.InputReader.Services
 {
     public class FileService : IFileService
     {
-        private const string InputFolder = @"C:\Dev\Personal\GoogleHashCode2018\Input\";
-        private const string OutputFolder = @"C:\Dev\Personal\GoogleHashCode2018\Output\";
+        private const string InputFolder = @"C:\Dev\Personal\GoogleHashCode2019\Input\";
+        private const string OutputFolder = @"C:\Dev\Personal\GoogleHashCode2019\Output\";
 
-        public FileContents ReadFile(string fileName)
+        public Collection ReadFile(string fileName)
         {
             var path = $"{InputFolder}{fileName}";
 
@@ -24,38 +24,35 @@ namespace HashCode.Infra.InputReader.Services
 
             using (var file = File.OpenText(path))
             {
-                var inputVariables = new List<string>();
-                var fileContents = new FileContents();
-                var rides = new List<Ride>();
+                var fileContents = new Collection();
+                var photos = new List<Photo>();
                 var line = file.ReadLine();
                 var isFirstLine = true;
                 var row = -1;
-
-
+            
                 while (line != null)
                 {
                     if (isFirstLine)
                     {
-                        inputVariables = line.Split(' ').ToList();
-                        fileContents.Rows = Convert.ToInt32(inputVariables[0]);
-                        fileContents.Columns = Convert.ToInt32(inputVariables[1]);
-                        fileContents.NumberOfVehicles = Convert.ToInt32(inputVariables[2]);
-                        fileContents.NumberOfRides = Convert.ToInt32(inputVariables[3]);
-                        fileContents.PerRideBonusForStartingOnTime = Convert.ToInt32(inputVariables[4]);
-                        fileContents.NumberOfStepsInSimulation = Convert.ToInt32(inputVariables[5]);
+                        fileContents.AmountOfPhotos = Convert.ToInt32(line);
                     }
                     else
                     {
-                        var rideParameters = line.Split(' ').ToList();
-                        var ride = new Ride()
+                        var photoParameters = line.Split(' ').ToList();
+                        var photo = new Photo()
                         {
-                            StartIntersection = new Tuple<int, int>(Convert.ToInt32(rideParameters[0]), Convert.ToInt32(rideParameters[1])),
-                            FinishIntersection = new Tuple<int, int>(Convert.ToInt32(rideParameters[2]), Convert.ToInt32(rideParameters[3])),
-                            EarliestStart = Convert.ToInt32(rideParameters[4]),
-                            LatestFinish = Convert.ToInt32(rideParameters[5]),
-                            RideNumber = row
+                            Id = row,
+                            IsHorizontal = photoParameters[0] == "H",
+                            NumberOfTags = Convert.ToInt32(photoParameters[1]),
+                            Tags = new List<string>()
                         };
-                        rides.Add(ride);
+
+                        for (var i = 2; i < photoParameters.Count; i++)
+                        {
+                            photo.Tags.Add(photoParameters[i]);
+                        }
+
+                        photos.Add(photo);
                     }
 
                     line = file.ReadLine();
@@ -63,7 +60,7 @@ namespace HashCode.Infra.InputReader.Services
                     row++;
                 }
 
-                fileContents.Rides = rides;
+                fileContents.Photos = photos;
 
                 return fileContents;
             }
@@ -78,16 +75,16 @@ namespace HashCode.Infra.InputReader.Services
 
             var sb = new StringBuilder();
 
-            foreach (var vehicle in result.Vehicles)
-            {
-                sb.Append($"{vehicle.AssignedRides.Count} ");
-                foreach (var rides in vehicle.AssignedRides)
-                {
-                    sb.Append(rides.RideNumber + " ");
-                }
-                sb.Append("\n");
-                counter++;
-            }
+            //foreach (var vehicle in result.Vehicles)
+            //{
+            //    sb.Append($"{vehicle.AssignedRides.Count} ");
+            //    foreach (var rides in vehicle.AssignedRides)
+            //    {
+            //        sb.Append(rides.RideNumber + " ");
+            //    }
+            //    sb.Append("\n");
+            //    counter++;
+            //}
 
             File.AppendAllText(path, sb.ToString());
         }

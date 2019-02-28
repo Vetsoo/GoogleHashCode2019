@@ -61,21 +61,16 @@ namespace HashCode.Output
 
             Console.WriteLine($"File {fileName} has been read out.");
 
-            Console.WriteLine($"Amount of rows: {fileContents.Rows}");
-            Console.WriteLine($"Amount of columns: {fileContents.Columns}");
-            Console.WriteLine($"Number of vehicles in fleet: {fileContents.NumberOfVehicles}");
-            Console.WriteLine($"Number of rides: {fileContents.NumberOfRides}");
-            Console.WriteLine($"Bonus for starting on time: {fileContents.PerRideBonusForStartingOnTime}");
-            Console.WriteLine($"Number of steps in simulation: {fileContents.NumberOfStepsInSimulation}");
+            Console.WriteLine($"Amount of rows: {fileContents.AmountOfPhotos}");
             Console.WriteLine();
 
             //TODO Execute algorithm
             var algorithmService = new AlgorithmService();
 
-            var result = algorithmService.RunCode(fileContents, codeBaseNr);
+            //var result = algorithmService.RunCode(fileContents, codeBaseNr);
 
             //TODO Write correct solution to file
-            fileService.WriteFile(fileName, result);
+            //fileService.WriteFile(fileName, result);
         }
 
     }

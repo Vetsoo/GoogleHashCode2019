@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using HashCode.Core.Domain;
 using HashCode.Core.Interfaces;
 
@@ -8,7 +6,7 @@ namespace HashCode.Core.Services
 {
     public class AlgorithmService : IAlgorithmService
     {
-        public Result RunCode(FileContents fileContents, int codebase)
+        public Result RunCode(Collection fileContents, int codebase)
         {
             switch (codebase)
             {
@@ -33,31 +31,31 @@ namespace HashCode.Core.Services
             }
         }
 
-        public Result RunCode1(FileContents fileContents)
+        public Result RunCode1(Collection fileContents)
         {
             Result result = new Result();
             return result;
         }
 
-        public Result RunCode2(FileContents fileContents)
+        public Result RunCode2(Collection fileContents)
         {
             Result result = new Result();
             return result;
         }
 
-        public Result RunCode3(FileContents fileContents)
+        public Result RunCode3(Collection fileContents)
         {
             Result result = new Result();
             return result;
         }
 
-        public Result RunCode4(FileContents fileContents)
+        public Result RunCode4(Collection fileContents)
         {
             Result result = new Result();
             return result;
         }
 
-        public Result RunCode5(FileContents fileContents)
+        public Result RunCode5(Collection fileContents)
         {
             Result result = new Result();
             return result;
