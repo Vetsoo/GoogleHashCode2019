@@ -49,7 +49,8 @@ namespace HashCode.Output
 
             for (int i = 0; i < inputFiles.Count; i++)
             {
-                Program.RunSingleFile(inputFiles[i], i);
+                var j = i + 1;
+                Program.RunSingleFile(inputFiles[i], j);
             }
         }
 
@@ -67,10 +68,10 @@ namespace HashCode.Output
             //TODO Execute algorithm
             var algorithmService = new AlgorithmService();
 
-            //var result = algorithmService.RunCode(fileContents, codeBaseNr);
+            var result = algorithmService.RunCode(fileContents, codeBaseNr);
 
             //TODO Write correct solution to file
-            //fileService.WriteFile(fileName, result);
+            fileService.WriteFile(fileName, result);
         }
 
     }

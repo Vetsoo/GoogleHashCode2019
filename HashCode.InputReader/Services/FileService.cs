@@ -71,20 +71,21 @@ namespace HashCode.Infra.InputReader.Services
 
             var path = $"{OutputFolder}{inputFile.Substring(0, inputFile.IndexOf(".", StringComparison.Ordinal))}.out";
 
-            var counter = 1;
-
             var sb = new StringBuilder();
 
-            //foreach (var vehicle in result.Vehicles)
-            //{
-            //    sb.Append($"{vehicle.AssignedRides.Count} ");
-            //    foreach (var rides in vehicle.AssignedRides)
-            //    {
-            //        sb.Append(rides.RideNumber + " ");
-            //    }
-            //    sb.Append("\n");
-            //    counter++;
-            //}
+            sb.Append($"{result.Slides.Count}\n");
+
+            foreach (var slide in result.Slides)
+            {
+                if (slide.Photos.Count == 2)
+                {
+                    sb.Append($"{slide.Photos[0].Id} {slide.Photos[1].Id}\n");
+                }
+                else
+                {
+                    sb.Append($"{slide.Photos[0].Id}\n");
+                }
+            }
 
             File.AppendAllText(path, sb.ToString());
         }
