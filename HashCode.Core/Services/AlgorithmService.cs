@@ -8,54 +8,60 @@ namespace HashCode.Core.Services
 {
     public class AlgorithmService : IAlgorithmService
     {
-        public Result AssignRides(FileContents fileContents)
+        public Result RunCode(FileContents fileContents, int codebase)
         {
-            var result = new Result
+            switch (codebase)
             {
-                Vehicles = new List<Vehicle>()
-            };
+                case 1:
+                    return RunCode1(fileContents);
 
-            for (var vehicle = 1; vehicle <= fileContents.NumberOfVehicles; vehicle++)
-            {
-                result.Vehicles.Add(new Vehicle());
+                case 2:
+                    return RunCode2(fileContents);
+
+                case 3:
+                    return RunCode3(fileContents);
+
+                case 4:
+                    return RunCode4(fileContents);
+
+                case 5:
+                    return RunCode5(fileContents);
+                default:
+                    throw new NotImplementedException();
+                    break;
+
             }
+        }
 
-            for (var steps = 0; steps < fileContents.NumberOfStepsInSimulation; steps++)
-            {
-                foreach (var vehicle in result.Vehicles.Where(x => x.StepsToGo == steps))
-                {
-                    if (vehicle.StepsToGo == steps && steps != 0)
-                    {
-                        vehicle.CurrentPosition = vehicle.AssignedRides.LastOrDefault().FinishIntersection;
-                    }
-
-                    foreach (var ride in fileContents.Rides.Where(x => !x.Executed))
-                    {
-                        var rideDistance = Math.Abs(ride.FinishIntersection.Item1 - ride.StartIntersection.Item1) +
-                                           Math.Abs(ride.FinishIntersection.Item2 - ride.StartIntersection.Item2);
-
-                        if (ride.EarliestStart > steps)
-                        if (vehicle.StepsToGo == steps)
-                        {
-                            var distanceToStartPostion =
-                                Math.Abs((vehicle.CurrentPosition.Item1 - ride.StartIntersection.Item1) +
-                                         (vehicle.CurrentPosition.Item2 - ride.StartIntersection.Item2));
-
-                            var distance = distanceToStartPostion + rideDistance;
-
-                            ride.Executed = true;
-                            vehicle.StepsToGo += distance;
-                            vehicle.AssignedRides.Add(ride);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
+        public Result RunCode1(FileContents fileContents)
+        {
+            Result result = new Result();
             return result;
         }
+
+        public Result RunCode2(FileContents fileContents)
+        {
+            Result result = new Result();
+            return result;
+        }
+
+        public Result RunCode3(FileContents fileContents)
+        {
+            Result result = new Result();
+            return result;
+        }
+
+        public Result RunCode4(FileContents fileContents)
+        {
+            Result result = new Result();
+            return result;
+        }
+
+        public Result RunCode5(FileContents fileContents)
+        {
+            Result result = new Result();
+            return result;
+        }
+
     }
 }
