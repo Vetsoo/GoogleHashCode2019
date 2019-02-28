@@ -66,24 +66,36 @@ namespace HashCode.Core.Services
                 Slides = new List<Slide>()
             };
 
-            var verticalPhotos = collection.Photos.Where(p => p.IsHorizontal == false).ToList();
+            var verticalPhotos = collection.Photos.Where(p => p.IsHorizontal == false).OrderByDescending(x => x.NumberOfTags).ToList();
+
+            var decreasingList = verticalPhotos;
+
+            while (decreasingList.Any())
+            {
+                var kak = GetMinorityInCommon(decreasingList);
+
+                result.Slides.Add(kak.Item1);
+
+                decreasingList = kak.Item2;
+            }
+
             var horizontalPhotos = collection.Photos.Where(p => p.IsHorizontal).ToList();
 
             var amountOfSlides = horizontalPhotos.Count() + (verticalPhotos.Count() / 2);
 
-            for (var i = 0; i < verticalPhotos.Count(); i = i + 2)
-            {
-                var j = i + 1;
-                var slide = new Slide
-                {
-                    Photos = new List<Photo>
-                    {
-                        verticalPhotos[i],
-                        verticalPhotos[j]
-                    }
-                };
-                result.Slides.Add(slide);
-            }
+            //for (var i = 0; i < verticalPhotos.Count(); i = i + 2)
+            //{
+            //    var j = i + 1;
+            //    var slide = new Slide
+            //    {
+            //        Photos = new List<Photo>
+            //        {
+            //            verticalPhotos[i],
+            //            verticalPhotos[j]
+            //        }
+            //    };
+            //    result.Slides.Add(slide);
+            //}
 
             foreach (var photo in horizontalPhotos)
             {
@@ -101,5 +113,28 @@ namespace HashCode.Core.Services
             return result;
         }
 
+        private Tuple<Slide, List<Photo>> GetMinorityInCommon(List<Photo> photos)
+        {
+            var toCheck = photos.FirstOrDefault();
+            var orderedList = new List<Photo>();
+            if (toCheck != null)
+            {
+                orderedList = photos.OrderBy(x => x.Tags.Except(toCheck.Tags)).ToList();
+            }
+
+            var slide = new Slide
+            {
+                Photos = new List<Photo>
+                {
+                    toCheck,
+                    orderedList[0]
+                }
+            };
+
+            photos.Remove(toCheck);
+            photos.Remove(orderedList[0]);
+
+            return new Tuple<Slide, List<Photo>>(slide, photos);
+        }
     }
 }
