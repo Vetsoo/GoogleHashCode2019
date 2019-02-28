@@ -72,10 +72,10 @@ namespace HashCode.Output
             //TODO Execute algorithm
             var algorithmService = new AlgorithmService();
 
-            var result = algorithmService.AssignRides(fileContents);
+            var result = algorithmService.RunCode(fileContents, codeBaseNr);
 
             //TODO Write correct solution to file
-            fileService.WriteFile(inputFile, result);
+            fileService.WriteFile(fileName, result);
         }
 
     }
