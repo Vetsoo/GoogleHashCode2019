@@ -41,6 +41,8 @@ namespace HashCode.Core.Services
 
         public Result RunCode2(Collection collection)
         {
+
+
             return CommonCode(collection);
         }
 
@@ -66,22 +68,22 @@ namespace HashCode.Core.Services
                 Slides = new List<Slide>()
             };
 
-            var verticalPhotos = collection.Photos.Where(p => p.IsHorizontal == false).OrderByDescending(x => x.NumberOfTags).ToList();
+            //var verticalPhotos = collection.Photos.Where(p => p.IsHorizontal == false).OrderByDescending(x => x.NumberOfTags).ToList();
 
-            var decreasingList = verticalPhotos;
+            //var decreasingList = verticalPhotos;
 
-            while (decreasingList.Any())
-            {
-                var kak = GetMinorityInCommon(decreasingList);
+            //while (decreasingList.Any())
+            //{
+            //    var kak = GetMinorityInCommon(decreasingList);
 
-                result.Slides.Add(kak.Item1);
+            //    result.Slides.Add(kak.Item1);
 
-                decreasingList = kak.Item2;
-            }
+            //    decreasingList = kak.Item2;
+            //}
 
-            var horizontalPhotos = collection.Photos.Where(p => p.IsHorizontal).ToList();
+            var horizontalPhotos = collection.Photos.Where(p => p.IsHorizontal).OrderByDescending(x => x.NumberOfTags).ToList();
 
-            var amountOfSlides = horizontalPhotos.Count() + (verticalPhotos.Count() / 2);
+            //var amountOfSlides = horizontalPhotos.Count() + (verticalPhotos.Count() / 2);
 
             //for (var i = 0; i < verticalPhotos.Count(); i = i + 2)
             //{
@@ -97,18 +99,30 @@ namespace HashCode.Core.Services
             //    result.Slides.Add(slide);
             //}
 
-            foreach (var photo in horizontalPhotos)
-            {
-                var slide = new Slide
-                {
-                    Photos = new List<Photo>
-                    {
-                        photo
-                    }
-                };
+            var decreasingList = horizontalPhotos;
 
-                result.Slides.Add(slide);
+            while (decreasingList.Any())
+            {
+                var kak = GetHigherAs0(decreasingList);
+
+                result.Slides.Add(kak.Item1);
+                result.Slides.Add(kak.Item2);
+
+                decreasingList = kak.Item3;
             }
+
+            //foreach (var photo in horizontalPhotos)
+            //{
+            //    var slide = new Slide
+            //    {
+            //        Photos = new List<Photo>
+            //        {
+            //            photo
+            //        }
+            //    };
+
+            //    result.Slides.Add(slide);
+            //}
 
             return result;
         }
@@ -147,6 +161,45 @@ namespace HashCode.Core.Services
             photos.Remove(orderedList[0]);
 
             return new Tuple<Slide, List<Photo>>(slide, photos);
+        }
+
+        private Tuple<Slide, Slide, List<Photo>> GetHigherAs0(List<Photo> photos)
+        {
+            var toCheck = photos.FirstOrDefault();
+            Photo foundPic = null;
+            if (toCheck != null)
+            {
+                foreach (var photo in photos)
+                {
+                    var amount = photo.Tags.Intersect(toCheck.Tags).Count();
+                    if (photo.Id != toCheck.Id && amount > 0)
+                    {
+                        foundPic = photo;
+                        break;                        
+                    }
+                }
+            }
+
+            var slide1 = new Slide
+            {
+                Photos = new List<Photo>
+                {
+                    toCheck
+                }
+            };
+
+            var slide2 = new Slide
+            {
+                Photos = new List<Photo>
+                {
+                    foundPic
+                }
+            };
+
+            var removed = photos.Remove(toCheck);
+            var del = photos.Remove(foundPic);
+
+            return new Tuple<Slide, Slide, List<Photo>>(slide1, slide2, photos);
         }
     }
 }
