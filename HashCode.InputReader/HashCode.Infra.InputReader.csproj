@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <AssemblyName>HashCode.Infra.InputReader</AssemblyName>
+    <RootNamespace>HashCode.Infra.InputReader</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HashCode.Core\HashCode.Core.csproj" />
+  </ItemGroup>
+
+</Project>
