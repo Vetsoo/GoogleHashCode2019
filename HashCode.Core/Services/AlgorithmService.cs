@@ -119,7 +119,19 @@ namespace HashCode.Core.Services
             var orderedList = new List<Photo>();
             if (toCheck != null)
             {
-                orderedList = photos.OrderBy(x => x.Tags.Except(toCheck.Tags)).ToList();
+                var wut = new Dictionary<Photo, int>();
+                foreach (var photo in photos)
+                {
+                    var amount = photo.Tags.Except(toCheck.Tags).Count();
+                    wut.Add(photo, amount);
+                }
+
+                var order = wut.OrderByDescending(x => x.Value);
+
+                foreach (var pic in order)
+                {
+                    orderedList.Add(pic.Key);
+                }
             }
 
             var slide = new Slide
