@@ -10,8 +10,8 @@ namespace HashCode.Infra.InputReader.Services
 {
     public class FileService : IFileService
     {
-        private const string InputFolder = @"C:\Dev\Personal\GoogleHashCode2019\Input\";
-        private const string OutputFolder = @"C:\Dev\Personal\GoogleHashCode2019\Output\";
+        private const string InputFolder = @"C:\Users\mvermeiren\source\repos\HashCode2019\GoogleHashCode2019\Input\";
+        private const string OutputFolder = @"C:\Users\mvermeiren\source\repos\HashCode2019\GoogleHashCode2019\Output\";
 
         public Collection ReadFile(string fileName)
         {

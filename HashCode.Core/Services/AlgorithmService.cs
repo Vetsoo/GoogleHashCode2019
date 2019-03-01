@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using HashCode.Core.Domain;
@@ -68,63 +69,124 @@ namespace HashCode.Core.Services
                 Slides = new List<Slide>()
             };
 
-            //var verticalPhotos = collection.Photos.Where(p => p.IsHorizontal == false).OrderByDescending(x => x.NumberOfTags).ToList();
+            var verticalPhotos = collection.Photos.Where(p => p.IsHorizontal == false).OrderByDescending(x => x.NumberOfTags).ToList();
 
-            //var decreasingList = verticalPhotos;
+            var totalRowsToDo = verticalPhotos.Count;
+            var doneRows = 0;
 
-            //while (decreasingList.Any())
-            //{
-            //    var kak = GetMinorityInCommon(decreasingList);
-
-            //    result.Slides.Add(kak.Item1);
-
-            //    decreasingList = kak.Item2;
-            //}
-
-            var horizontalPhotos = collection.Photos.Where(p => p.IsHorizontal).OrderByDescending(x => x.NumberOfTags).ToList();
-
-            //var amountOfSlides = horizontalPhotos.Count() + (verticalPhotos.Count() / 2);
-
-            //for (var i = 0; i < verticalPhotos.Count(); i = i + 2)
-            //{
-            //    var j = i + 1;
-            //    var slide = new Slide
-            //    {
-            //        Photos = new List<Photo>
-            //        {
-            //            verticalPhotos[i],
-            //            verticalPhotos[j]
-            //        }
-            //    };
-            //    result.Slides.Add(slide);
-            //}
-
-            var decreasingList = horizontalPhotos;
-
-            while (decreasingList.Any())
+            for (var i = 0; i < totalRowsToDo; i += 500)
             {
-                var kak = GetHigherAs0(decreasingList);
+                var decreasingListVert = verticalPhotos.Skip(doneRows).Take(500).ToList();
+                doneRows += 500;
 
-                result.Slides.Add(kak.Item1);
-                result.Slides.Add(kak.Item2);
+                while (decreasingListVert.Any())
+                {
+                    Debug.WriteLine(doneRows + " for vertical photos");
+                    var kak = GetMinorityInCommon(decreasingListVert);
 
-                decreasingList = kak.Item3;
+                    kak.Item1.UniqueTags = kak.Item1.Photos[0].Tags.Union(kak.Item1.Photos[1].Tags).ToList();
+
+                    result.Slides.Add(kak.Item1);
+
+                    decreasingListVert = kak.Item2;
+                }
             }
 
-            //foreach (var photo in horizontalPhotos)
-            //{
-            //    var slide = new Slide
-            //    {
-            //        Photos = new List<Photo>
-            //        {
-            //            photo
-            //        }
-            //    };
+            var hPhotos = collection.Photos.Where(p => p.IsHorizontal == true).OrderByDescending(x => x.NumberOfTags).ToList();
 
-            //    result.Slides.Add(slide);
-            //}
+            foreach(var hphoto in hPhotos)
+            {
+                result.Slides.Add(
+                    new Slide {
+                        Photos = new List<Photo> { hphoto },
+                        UniqueTags = hphoto.Tags
+                        
+                    }
+                    );
+            }
+
+
+            result = SortAllSlides(result);        
+
+
+            
 
             return result;
+        }
+
+        private Result SortAllSlides(Result result)
+        {
+
+            result.Slides = result.Slides.OrderByDescending(x => x.UniqueTags.Count()).ToList();
+
+            var totalRowsToDo = result.Slides.Count;
+            var doneRows = 0;
+            var tempList = new List<Slide>();
+
+            for (var i = 0; i < totalRowsToDo; i += 500)
+            {
+                var decreasingList = result.Slides.Skip(doneRows).Take(500).ToList();
+                doneRows += 500;
+
+                Slide tempSlide1 = null;
+                Slide tempSlide2 = null;
+                while (decreasingList.Any())
+                {
+                    if (tempSlide1 == null)
+                    {
+                        tempSlide1 = decreasingList[0];
+
+                        tempList.Add(tempSlide1);
+
+                        decreasingList.RemoveAt(0);
+                        continue;
+                    }
+                    Debug.WriteLine(doneRows + " for all slides");
+                    tempSlide2 = BestMatch(tempSlide1, decreasingList);
+                    tempList.Add(tempSlide2);
+                    tempSlide1 = tempSlide2;
+
+                    decreasingList.Remove(tempSlide2);
+                    tempSlide2 = null;
+
+
+                }
+            }
+
+            result.Slides = tempList;
+
+            return result;
+        }
+
+        private Slide BestMatch(Slide tempSlide1, List<Slide> slides)
+        {
+            var highscore = -1;
+            Slide tempResult = null;
+            foreach(var slide in slides)
+            {
+                var scoreSlide1 = 0;
+                var scoreSlideMiddle = 0;
+                var scoreSlide2 = 0;
+
+                var commonTags = tempSlide1.UniqueTags.Intersect(slide.UniqueTags);
+                var leftTags = tempSlide1.UniqueTags.Except(commonTags);
+                var rightTags = slide.UniqueTags.Except(commonTags);
+
+                scoreSlide1 = leftTags.Count();
+                scoreSlideMiddle = commonTags.Count();
+                scoreSlide2 = rightTags.Count();
+
+                var minFirst2 = Math.Min(scoreSlide1, scoreSlideMiddle);
+                var temphighscore = Math.Min(minFirst2, scoreSlide2);
+
+                if(temphighscore > highscore)
+                {
+                    highscore = temphighscore;
+                    tempResult = slide;
+                }
+            }
+
+            return tempResult;
         }
 
         private Tuple<Slide, List<Photo>> GetMinorityInCommon(List<Photo> photos)
