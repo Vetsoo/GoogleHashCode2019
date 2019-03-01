@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using HashCode.Core.Domain;
 using HashCode.Core.Interfaces;
 
@@ -81,7 +82,7 @@ namespace HashCode.Core.Services
             //    decreasingList = kak.Item2;
             //}
 
-            var horizontalPhotos = collection.Photos.Where(p => p.IsHorizontal).OrderByDescending(x => x.NumberOfTags).ToList();
+
 
             //var amountOfSlides = horizontalPhotos.Count() + (verticalPhotos.Count() / 2);
 
@@ -99,16 +100,19 @@ namespace HashCode.Core.Services
             //    result.Slides.Add(slide);
             //}
 
-            var decreasingList = horizontalPhotos;
+            var stepSize = collection.Photos.Count / 20;
+            var count = collection.Photos.Count;
 
-            while (decreasingList.Any())
+            List<Task<Result>> taskList = new List<Task<Result>>();
+
+            for(int i=0; i<=20; i++)
             {
-                var kak = GetHigherAs0(decreasingList);
+                taskList.Add(Task<Result>.Factory.StartNew(() => ExecuteCode(collection.Photos.Skip((stepSize * i)).Take(stepSize).ToList())));
+            }
 
-                result.Slides.Add(kak.Item1);
-                result.Slides.Add(kak.Item2);
-
-                decreasingList = kak.Item3;
+            for (int i = 0; i < taskList.Count; i++)
+            {
+                result.Slides.AddRange(taskList[i].Result.Slides);
             }
 
             //foreach (var photo in horizontalPhotos)
@@ -124,6 +128,33 @@ namespace HashCode.Core.Services
             //    result.Slides.Add(slide);
             //}
 
+                return result;
+        }
+
+        private Result ExecuteCode(List<Photo> photos)
+        {
+            
+
+            var decreasingList = photos;
+            var result = new Result();
+            result.Slides = new List<Slide>();
+
+            while (decreasingList.Any())
+            {
+                var kak = GetHigherAs0(decreasingList);
+
+                if(kak.Item2.Photos[0] != null){
+                    if(!result.Slides.Any(s => (s.Photos[0].Id == kak.Item1.Photos[0].Id) && (s.Photos[0].Id == kak.Item2.Photos[0].Id)))
+                    {
+                        result.Slides.Add(kak.Item1);
+                        result.Slides.Add(kak.Item2);
+                    }
+                 }
+                
+
+                decreasingList = kak.Item3;
+            }
+            
             return result;
         }
 
@@ -188,6 +219,11 @@ namespace HashCode.Core.Services
                 }
             };
 
+            if(foundPic != null)
+            {
+
+            }
+
             var slide2 = new Slide
             {
                 Photos = new List<Photo>
@@ -197,7 +233,7 @@ namespace HashCode.Core.Services
             };
 
             var removed = photos.Remove(toCheck);
-            var del = photos.Remove(foundPic);
+            
 
             return new Tuple<Slide, Slide, List<Photo>>(slide1, slide2, photos);
         }
