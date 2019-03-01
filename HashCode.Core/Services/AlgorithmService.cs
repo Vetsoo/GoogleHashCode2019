@@ -74,21 +74,21 @@ namespace HashCode.Core.Services
             var totalRowsToDo = verticalPhotos.Count;
             var doneRows = 0;
 
-            for (var i = 0; i < totalRowsToDo; i += 500)
+            for (var i = 0; i < totalRowsToDo; i += 2000)
             {
-                var decreasingListVert = verticalPhotos.Skip(doneRows).Take(500).ToList();
-                doneRows += 500;
+                var decreasingListVert = verticalPhotos.Skip(doneRows).Take(2000).ToList();
+                doneRows += 2000;
 
                 while (decreasingListVert.Any())
                 {
                     Debug.WriteLine(doneRows + " for vertical photos");
-                    var kak = GetMinorityInCommon(decreasingListVert);
+                    var resultWithDifferentTags = GetMinorityInCommon(decreasingListVert);
 
-                    kak.Item1.UniqueTags = kak.Item1.Photos[0].Tags.Union(kak.Item1.Photos[1].Tags).ToList();
+                    resultWithDifferentTags.Item1.UniqueTags = resultWithDifferentTags.Item1.Photos[0].Tags.Union(resultWithDifferentTags.Item1.Photos[1].Tags).ToList();
 
-                    result.Slides.Add(kak.Item1);
+                    result.Slides.Add(resultWithDifferentTags.Item1);
 
-                    decreasingListVert = kak.Item2;
+                    decreasingListVert = resultWithDifferentTags.Item2;
                 }
             }
 
